@@ -69,11 +69,8 @@ services:
         ports:
             - '80:80'
             - '443:443'
-            - '90:90'
-            - '8090:8090'
         links:
             - moodle
-            - varnish
             - mail
         environment:
             TZ: '${LOCAL_TIMEZONE}'
@@ -193,26 +190,6 @@ services:
             ALLOW_EMPTY_PASSWORD: 'yes'
             TZ: '${LOCAL_TIMEZONE}'
         command: "redis-server ${REDIS_CONF_PREFIX}/redis/redis.conf"
-    
-    varnish:
-        image: 'varnish:stable'
-        container_name: varnish
-        networks:
-            - backend
-        volumes:
-            - type: bind
-              source: ./varnish/default.vcl
-              target: '${VARNISH_CONF_PREFIX}/default.vcl'
-        hostname: varnish
-        tmpfs:
-            - /var/lib/varnish:exec
-        restart: unless-stopped
-        ports:
-            - '8080:80'
-        environment:
-            VARNISH_SIZE: '${VARNISH_SIZE}'
-            TZ: '${LOCAL_TIMEZONE}'
-        command: "-a http=:8080,HTTP -p default_ttl=3600"
         
     mail:
         image: 'mailhog/mailhog'
