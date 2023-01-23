@@ -5,7 +5,6 @@ services:
     moodle:
         depends_on:
             - database
-            - elasticsearch
         image: '${PHP_IMAGE_NAME}'
         container_name: moodle
         networks:
@@ -75,7 +74,6 @@ services:
         links:
             - moodle
             - varnish
-            - elasticsearch
             - mail
         environment:
             TZ: '${LOCAL_TIMEZONE}'
@@ -215,23 +213,6 @@ services:
             VARNISH_SIZE: '${VARNISH_SIZE}'
             TZ: '${LOCAL_TIMEZONE}'
         command: "-a http=:8080,HTTP -p default_ttl=3600"
-    
-    elasticsearch:
-        image: 'elasticsearch:7.17.8'
-        container_name: elasticsearch
-        networks:
-            - backend
-        hostname: elasticsearch
-        restart: unless-stopped
-        ports:
-            - '9200:9200'
-            - '9300:9300'
-        environment:
-            discovery.type: 'single-node'
-            xpack.security.enabled: false
-            ES_JAVA_OPTS: '-Xms512m -Xmx512m'
-            TZ: '${LOCAL_TIMEZONE}'
-        command: sh -c "elasticsearch-plugin list | grep -q analysis-icu || yes | elasticsearch-plugin install analysis-icu && elasticsearch-plugin list | grep -q analysis-phonetic || yes | elasticsearch-plugin install analysis-phonetic; /usr/local/bin/docker-entrypoint.sh 'eswrapper'"
         
     mail:
         image: 'mailhog/mailhog'
