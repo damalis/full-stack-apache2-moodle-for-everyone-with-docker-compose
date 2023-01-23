@@ -33,15 +33,15 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
-            start_period: 400s
+            start_period: 120s
         environment:
             TZ: '${LOCAL_TIMEZONE}'
         labels:            
             - 'docker-volume-backup.stop-during-backup=true'
         command: >
-            bash -c "apt-get -y update && sh /tmp/packagecheck.sh 'zip unzip git gettext-base' && curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - | sh -s gd mysqli pdo_mysql intl zip sodium exif && if pecl install -p -- redis; then pecl install -o -f redis && rm -rf /tmp/pear && docker-php-ext-enable redis; fi; 
-            if [ -z \"$$(ls -A ${WEBSERVER_DOC_ROOT}/config.php)\" ]; then git clone -b MOODLE_401_STABLE git://git.moodle.org/moodle.git && export DB_USER=${DB_USER} export DB_PASSWORD=${DB_PASSWORD} export DB_NAME=${DB_NAME} && envsubst '$${DB_USER},$${DB_PASSWORD},$${DB_NAME}' < ${WEBSERVER_DOC_ROOT}/config-dist.php > ${WEBSERVER_DOC_ROOT}/config.php && 
-            mkdir -p ${WEBSERVER_DOC_ROOT}/moodledata && chmod 0777 ${WEBSERVER_DOC_ROOT}/moodledata && /usr/bin/php ${WEBSERVER_DOC_ROOT}/admin/cli/install.php && grep -qe 'date.timezone = ${LOCAL_TIMEZONE}' ${PHP_INI_DIR_PREFIX}/php/conf.d/security.ini || echo 'date.timezone = ${LOCAL_TIMEZONE}' >> ${PHP_INI_DIR_PREFIX}/php/conf.d/security.ini; php-fpm"
+            bash -c "apt-get -y update && sh /tmp/packagecheck.sh 'git gettext-base' && curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - | sh -s gd mysqli intl zip xmlrpc soap exif opcache && if pecl install -p -- redis; then pecl install -o -f redis && rm -rf /tmp/pear && docker-php-ext-enable redis; fi; 
+            if [ -z \"$$(ls -A ${WEBSERVER_DOC_ROOT}/moodle/config.php)\" ]; then git clone -b MOODLE_401_STABLE git://git.moodle.org/moodle.git && sed \"s/$CFG->dbtype    = 'pgsql'/$CFG->dbtype    = 'mariadb'/'/;s/$CFG->dbhost    = 'localhost'/$CFG->dbhost    = 'database'/;s/$CFG->dbname    = 'moodle'/$CFG->dbname    = '${DB_NAME}'/;s/# database.default.database = ci4/database.default.database = ${DB_NAME}/;s/$CFG->dbuser    = 'username'/$CFG->dbuser    = '${DB_USER}'/;s/$CFG->dbpass    = 'password'/$CFG->dbpass    = '${DB_PASSWORD}'/;s/$CFG->prefix    = 'mdl_'/$CFG->prefix    = '${DB_TABLE_PREFIX}'/;s/$CFG->wwwroot   = 'http:\\/\\/example.com\\/moodle'/$CFG->wwwroot   = 'http:\\/\\/${DB_NAME}'/;s/$CFG->dataroot  = '\\/home\\/example\\/moodledata'/$CFG->dataroot  = '${WEBSERVER_DOC_ROOT}/..\\/moodledata'/\" ${WEBSERVER_DOC_ROOT}/moodle/config-dist.php > ${WEBSERVER_DOC_ROOT}/moodle/config.php && 
+            chmod 02777 ${WEBSERVER_DOC_ROOT}/../ && mkdir -p ${WEBSERVER_DOC_ROOT}/../moodledata && php ${WEBSERVER_DOC_ROOT}/admin/cli/install.php; fi && grep -qe 'date.timezone = ${LOCAL_TIMEZONE}' ${PHP_INI_DIR_PREFIX}/php/conf.d/security.ini || echo 'date.timezone = ${LOCAL_TIMEZONE}' >> ${PHP_INI_DIR_PREFIX}/php/conf.d/security.ini; php-fpm"
 
     webserver:
         depends_on:
