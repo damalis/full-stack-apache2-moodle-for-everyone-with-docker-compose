@@ -1,7 +1,7 @@
 AcceptPathInfo On
 
 <IfModule mod_rewrite.c>
-	RewriteEngine on
+    RewriteEngine on
 
     RewriteRule "(\/vendor\/)" - [F]
     RewriteRule "(\/node_modules\/)" - [F]
@@ -17,9 +17,9 @@ AcceptPathInfo On
     RewriteRule "(\/tests\/behat\/)" - [F]
     RewriteRule "(\/fixtures\/)" - [F]
 	
-	RewriteCond %{REQUEST_URI} !^/moodle/
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.*)$ /moodle/$1
-	RewriteRule ^(/)?$ moodle/index.php [L]
+    RewriteCond %{REQUEST_URI} !^/moodle/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ /moodle/$1
+    RewriteRule ^(/)?$ moodle/index.php [L]
 </IfModule>
