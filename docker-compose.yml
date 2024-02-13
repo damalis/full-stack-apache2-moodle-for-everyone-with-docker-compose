@@ -55,6 +55,7 @@ services:
             - frontend
         volumes:
             - 'html:${WEBSERVER_DOC_ROOT}'
+            - 'moodle-data:/home/${DOMAIN_NAME}/moodledata'
             - type: bind
               source: ./webserver
               target: '${HTTPD_PREFIX}/conf'
