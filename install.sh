@@ -363,8 +363,7 @@ done
 echo "Ok."
 
 which_db=""
-db_authentication_plugin="mysql_native_password"
-db_authentication_password="USING PASSWORD('"$pma_password"')"
+db_authentication_password=$pma_password
 db_package_manager="apt-get update \&\& apt-get install -y gettext-base"
 db_admin_commandline="mariadb-admin"
 db_connect_extension="mariadb"
@@ -374,8 +373,6 @@ do
 	which_db=$db
 	if [ $REPLY -eq 2 ]
 	then
-		db_authentication_plugin="caching_sha2_password"
-		db_authentication_password="BY '"$pma_password"'"
 		db_package_manager="microdnf install -y gettext"
 		db_admin_commandline="mysqladmin"
 		db_connect_extension="mysqli"
@@ -414,9 +411,7 @@ cp ./database/phpmyadmin/sql/create_tables.sql.template.example ./database/phpmy
 
 cp env.example .env
 
-sed -i 's/db_authentication_plugin/'$db_authentication_plugin'/' ./database/phpmyadmin/sql/create_tables.sql.template
 sed -i "s/db_authentication_password/${db_authentication_password}/" ./database/phpmyadmin/sql/create_tables.sql.template
-sed -i 's/db_authentication_plugin/'$db_authentication_plugin'/' .env
 sed -i "s|db_package_manager|${db_package_manager}|" .env
 sed -i 's/db_admin_commandline/'$db_admin_commandline'/' .env
 sed -i 's/db_connect_extension/'$db_connect_extension'/' .env
