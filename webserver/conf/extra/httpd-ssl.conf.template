@@ -130,6 +130,7 @@ ErrorLog "/usr/local/apache2/logs/example.com.error_log"
 TransferLog "/usr/local/apache2/logs/access_log"
 
 Protocols h2 http/1.1
+AcceptPathInfo On
 
 <Directory "/var/www/html">
 	DirectoryIndex index.php
@@ -346,5 +347,4 @@ CustomLog "/usr/local/apache2/logs/ssl_request_log" \
 	SSLCertificateFile "/etc/letsencrypt/live/example.com/fullchain.pem"
 	SSLCertificateKeyFile "/etc/letsencrypt/live/example.com/privkey.pem"
 	SSLCertificateChainFile "/etc/letsencrypt/live/example.com/chain.pem"
-	Include /etc/letsencrypt/options-ssl-apache-webserver.conf
 </VirtualHost>
